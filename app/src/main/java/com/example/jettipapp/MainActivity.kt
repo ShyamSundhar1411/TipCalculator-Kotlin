@@ -17,10 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,23 +40,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApp {
+                TopHeaderCard()
+            }
+        }
+    }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyApp(content: @Composable () -> Unit){
+    JetTipAppTheme(darkTheme = false) {
+        Scaffold(modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(title = { Text("JetTipApp") })
+            }
+        ){ innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                content()
             }
         }
     }
 }
 
 @Composable
-fun MyApp(content: @Composable () -> Unit){
-    JetTipAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding -> content()
-        }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun TopHeaderCard(totalPerPerson: Double=0.0){
-    Box(modifier = Modifier.padding(10.dp), contentAlignment = Alignment.Center) {
+fun TopHeaderCard(totalPerPerson:Double = 0.0){
+    Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
         Card(
             modifier =
             Modifier
@@ -66,7 +76,9 @@ fun TopHeaderCard(totalPerPerson: Double=0.0){
 
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(50.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -83,6 +95,6 @@ fun TopHeaderCard(totalPerPerson: Double=0.0){
 @Composable
 fun GreetingPreview() {
     MyApp{
-        Text("Hello Again")
+        TopHeaderCard()
     }
 }
