@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +19,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -89,6 +92,19 @@ fun TopHeaderCard(totalPerPerson:Double = 0.0){
             }
 
         }
+
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun MainContent(){
+    Surface(modifier = Modifier
+        .padding(2.dp)
+        .fillMaxWidth(),
+        shape = RoundedCornerShape(CornerSize(12.dp)),
+        border = BorderStroke(width = 1.dp,color = Color.LightGray)
+    ) {
+
     }
 }
 @Preview(showBackground = true)
