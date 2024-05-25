@@ -1,5 +1,6 @@
 package com.example.jettipapp.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -41,7 +43,7 @@ fun InputField(
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType=keyboardType, imeAction = imeAction),
         keyboardActions = onAction,
-
+        modifier = modifier.padding(bottom = 10.dp,start=10.dp,end=10.dp),
 
     )
 }
