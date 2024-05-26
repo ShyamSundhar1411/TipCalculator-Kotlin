@@ -9,14 +9,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
@@ -44,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jettipapp.components.InputField
 import com.example.jettipapp.ui.theme.JetTipAppTheme
+import com.example.jettipapp.widgets.RoundIconButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +59,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp {
                 TopHeaderCard()
+                MainContent()
             }
         }
     }
@@ -146,6 +154,27 @@ fun BillForm(
                     keyboardController?.hide()
                 }
             )
+
+            if(validState){
+                Row(modifier = Modifier.padding(10.dp),
+                    horizontalArrangement = Arrangement.Start) {
+                        Text("Split",
+                            modifier = Modifier.align(alignment = Alignment.CenterVertically)
+
+                        )
+                    Spacer(modifier = Modifier.width(120.dp))
+                    Row(modifier = Modifier.padding(horizontal = 3.dp), horizontalArrangement = Arrangement.End){
+                        RoundIconButton(imageVector = Icons.Default.Remove,
+                            onClick = { Log.d("Icon","BillForm: Removed") })
+                        RoundIconButton(imageVector = Icons.Default.Add,
+                            onClick = { Log.d("Icon","BillForm: Add") })
+                    }
+
+                }
+            }
+            else{
+                Box(){}
+            }
         }
     }
 }
