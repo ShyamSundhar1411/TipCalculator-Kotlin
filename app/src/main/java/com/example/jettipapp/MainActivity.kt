@@ -31,13 +31,16 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -51,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.example.jettipapp.components.InputField
 import com.example.jettipapp.ui.theme.JetTipAppTheme
 import com.example.jettipapp.widgets.RoundIconButton
+import kotlin.math.round
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,6 +140,9 @@ fun BillForm(
         totalBillState.value.trim().isNotEmpty();
     }
     val keyboardController = LocalSoftwareKeyboardController.current;
+    val sliderPositionState = remember {
+        mutableFloatStateOf(0f)
+    }
     Surface(modifier = Modifier
         .padding(2.dp)
         .fillMaxWidth(),
@@ -154,8 +161,6 @@ fun BillForm(
                     keyboardController?.hide()
                 }
             )
-
-            if(validState){
                 Row(modifier = Modifier.padding(10.dp),
                     horizontalArrangement = Arrangement.Start) {
                         Text("Split",
@@ -171,10 +176,37 @@ fun BillForm(
                     }
 
                 }
+               Row(modifier = Modifier.padding(10.dp),
+                   horizontalArrangement = Arrangement.Start
+                   ) {
+                   Text(text = "Tip",modifier = Modifier.align(alignment = Alignment.CenterVertically))
+                   Spacer(modifier = Modifier.width(200.dp))
+                   Text(text = "$33.00",modifier = Modifier.align(alignment = Alignment.CenterVertically))
+               }
+            Column(modifier = modifier.padding(10.dp),verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                Text(text = "${round(sliderPositionState.floatValue *100).toInt()}%")
+                Spacer(modifier = Modifier.height(14.dp))
+                Slider(
+                    modifier = Modifier.padding(start = 16.dp,end = 16.dp),
+                    value = sliderPositionState.floatValue,
+                    steps = 5,
+                    onValueChange = {newVal ->
+                        sliderPositionState.floatValue = newVal;
+                        Log.d("Slider","Bill form: $newVal")
+
+                    },
+                    onValueChangeFinished = {
+                            var newValue: Int = totalBillState.value.toInt()+round(sliderPositionState.floatValue *100).toInt();
+                            totalBillState.value = newValue.toString();
+
+                    }
+                )
+
             }
-            else{
-                Box(){}
-            }
+
+
         }
     }
 }
