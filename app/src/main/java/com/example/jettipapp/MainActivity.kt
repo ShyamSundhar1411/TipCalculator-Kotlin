@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,22 +24,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -48,11 +44,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jettipapp.components.InputField
 import com.example.jettipapp.ui.theme.JetTipAppTheme
+import com.example.jettipapp.utils.calculateTotalTip
+import com.example.jettipapp.utils.calculatetotalPerPerson
 import com.example.jettipapp.widgets.RoundIconButton
 import kotlin.math.round
 
@@ -62,7 +59,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApp {
-                TopHeaderCard()
                 MainContent()
             }
         }
@@ -143,6 +139,20 @@ fun BillForm(
     val sliderPositionState = remember {
         mutableFloatStateOf(0f)
     }
+    val splitByState = remember{
+        mutableIntStateOf(1)
+    }
+    val range = IntRange(start=1, endInclusive = 15);
+    val totalTipAmount = remember {
+        mutableDoubleStateOf(0.00);
+    }
+    val tipPercentage = remember {
+        mutableIntStateOf(0);
+    }
+    val totalPerPersonState = remember {
+        mutableDoubleStateOf(0.00);
+    }
+    TopHeaderCard(totalPerPerson = totalPerPersonState.doubleValue)
     Surface(modifier = Modifier
         .padding(2.dp)
         .fillMaxWidth(),
@@ -170,9 +180,21 @@ fun BillForm(
                     Spacer(modifier = Modifier.width(120.dp))
                     Row(modifier = Modifier.padding(horizontal = 3.dp), horizontalArrangement = Arrangement.End){
                         RoundIconButton(imageVector = Icons.Default.Remove,
-                            onClick = { Log.d("Icon","BillForm: Removed") })
+                            onClick = {
+                                splitByState.intValue = if(splitByState.intValue>1) splitByState.intValue-1
+                                else 1
+                                totalPerPersonState.doubleValue = calculatetotalPerPerson(totalBillState.value.toDouble(),splitByState.intValue, tipPercentage.intValue)
+                            })
+                        Text(text = "${splitByState.intValue}",
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(start = 9.dp, end = 9.dp)
+                            )
                         RoundIconButton(imageVector = Icons.Default.Add,
-                            onClick = { Log.d("Icon","BillForm: Add") })
+                            onClick = {
+                                if (splitByState.intValue<range.last) splitByState.intValue += 1
+                                totalPerPersonState.doubleValue = calculatetotalPerPerson(totalBillState.value.toDouble(),splitByState.intValue, tipPercentage.intValue)
+                            })
                     }
 
                 }
@@ -181,12 +203,12 @@ fun BillForm(
                    ) {
                    Text(text = "Tip",modifier = Modifier.align(alignment = Alignment.CenterVertically))
                    Spacer(modifier = Modifier.width(200.dp))
-                   Text(text = "$33.00",modifier = Modifier.align(alignment = Alignment.CenterVertically))
+                   Text(text = "$${totalTipAmount.doubleValue}",modifier = Modifier.align(alignment = Alignment.CenterVertically))
                }
             Column(modifier = modifier.padding(10.dp),verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                Text(text = "${round(sliderPositionState.floatValue *100).toInt()}%")
+                Text(text = "${tipPercentage.intValue}%")
                 Spacer(modifier = Modifier.height(14.dp))
                 Slider(
                     modifier = Modifier.padding(start = 16.dp,end = 16.dp),
@@ -194,12 +216,12 @@ fun BillForm(
                     steps = 5,
                     onValueChange = {newVal ->
                         sliderPositionState.floatValue = newVal;
-                        Log.d("Slider","Bill form: $newVal")
-
+                        tipPercentage.intValue = round(sliderPositionState.floatValue *100).toInt()
+                        totalTipAmount.doubleValue = calculateTotalTip(totalBill = totalBillState.value.toDouble(), tipPercentage = tipPercentage.intValue)
+                       totalPerPersonState.doubleValue = calculatetotalPerPerson(totalBillState.value.toDouble(), splitBy = splitByState.intValue, tipPercentage = tipPercentage.intValue);
                     },
                     onValueChangeFinished = {
-                            var newValue: Int = totalBillState.value.toInt()+round(sliderPositionState.floatValue *100).toInt();
-                            totalBillState.value = newValue.toString();
+
 
                     }
                 )
@@ -210,11 +232,11 @@ fun BillForm(
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     MyApp{
-        TopHeaderCard()
         MainContent()
 
     }
